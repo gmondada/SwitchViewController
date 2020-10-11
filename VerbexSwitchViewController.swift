@@ -35,6 +35,10 @@ class VerbexSwitchViewController: UIViewController {
         case antiFade // the old view is faded out
         case flipFromLeft
         case flipFromRight
+        case shiftLeft
+        case shiftRight
+        case shiftUp
+        case shiftDown
     }
 
     override func viewDidLayoutSubviews() {
@@ -100,6 +104,30 @@ class VerbexSwitchViewController: UIViewController {
                                           completion: completion)
             flip.fromRight = true
             animationLogic = flip
+        case .shiftLeft:
+            let shift = ShiftAnimationLogic(switchViewController: self,
+                                            newViewController: viewController,
+                                            completion: completion)
+            shift.moveDirection = .left
+            animationLogic = shift
+        case .shiftRight:
+            let shift = ShiftAnimationLogic(switchViewController: self,
+                                            newViewController: viewController,
+                                            completion: completion)
+            shift.moveDirection = .right
+            animationLogic = shift
+        case .shiftUp:
+            let shift = ShiftAnimationLogic(switchViewController: self,
+                                            newViewController: viewController,
+                                            completion: completion)
+            shift.moveDirection = .up
+            animationLogic = shift
+        case .shiftDown:
+            let shift = ShiftAnimationLogic(switchViewController: self,
+                                            newViewController: viewController,
+                                            completion: completion)
+            shift.moveDirection = .down
+            animationLogic = shift
         }
 
         currentTransitionLogic?.terminate()
@@ -135,7 +163,7 @@ private class TransitionLogic {
 
         handleViewTransition(oldView: old?.view, newView: new.view) {
             self.finishTransition(old: old, new: new, animated: true)
-            assert(self.isRunning);
+            assert(self.isRunning)
             self.isRunning = false
         }
     }
@@ -213,7 +241,7 @@ private class UnanimatedTransitionLogic: TransitionLogic {
         let r = parent.bounds
         newView.autoresizingMask = []
         newView.translatesAutoresizingMaskIntoConstraints = true
-        newView.frame = r;
+        newView.frame = r
         parent.addSubview(newView)
         completion()
     }
@@ -278,7 +306,7 @@ private class FadeAnimationLogic: AnimationLogic {
         let r = parent.bounds
         newView.autoresizingMask = []
         newView.translatesAutoresizingMaskIntoConstraints = true
-        newView.frame = r;
+        newView.frame = r
 
         if antiFade, let oldView = oldView {
             newView.alpha = 1
@@ -333,5 +361,69 @@ private class FlipAnimationLogic: TransitionLogic {
                           duration: duration,
                           options: [fromRight ? .transitionFlipFromRight : .transitionFlipFromLeft, .curveEaseInOut],
                           completion: { _ in completion() })
+    }
+}
+
+private class ShiftAnimationLogic: AnimationLogic {
+    enum Direction {
+        case left
+        case right
+        case up
+        case down
+    }
+
+    var moveDirection = Direction.left
+
+    override func preAnimation(oldView: UIView?, newView: UIView) {
+        let parent = switchViewController.view!
+        let frame = parent.bounds
+
+        newView.autoresizingMask = []
+        newView.translatesAutoresizingMaskIntoConstraints = true
+
+        switch moveDirection {
+        case .left:
+            var rightFrame = frame
+            rightFrame.origin.x += frame.width
+            newView.frame = rightFrame
+        case .right:
+            var leftFrame = frame
+            leftFrame.origin.x -= frame.width
+            newView.frame = leftFrame
+        case .up:
+            var downFrame = frame
+            downFrame.origin.y += frame.height
+            newView.frame = downFrame
+        case .down:
+            var upFrame = frame
+            upFrame.origin.y -= frame.height
+            newView.frame = upFrame
+        }
+
+        parent.addSubview(newView)
+    }
+
+    override func animation(oldView: UIView?, newView: UIView, expedited: Bool) {
+        let frame = switchViewController.view.bounds
+        newView.frame = frame
+
+        switch moveDirection {
+        case .left:
+            var leftFrame = frame
+            leftFrame.origin.x -= frame.width
+            oldView?.frame = leftFrame
+        case .right:
+            var rightFrame = frame
+            rightFrame.origin.x += frame.width
+            oldView?.frame = rightFrame
+        case .up:
+            var upFrame = frame
+            upFrame.origin.y -= frame.height
+            oldView?.frame = upFrame
+        case .down:
+            var downFrame = frame
+            downFrame.origin.y += frame.height
+            oldView?.frame = downFrame
+        }
     }
 }

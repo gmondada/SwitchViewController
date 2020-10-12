@@ -267,7 +267,7 @@ private class UnanimatedTransitionLogic: TransitionLogic {
  */
 private class AnimationLogic: TransitionLogic {
 
-    private var aborted = false
+    private var animator: UIViewPropertyAnimator?
 
     override func handleViewTransition(oldView: UIView?, newView: UIView, completion: @escaping ()->Void) {
 
@@ -275,23 +275,25 @@ private class AnimationLogic: TransitionLogic {
 
         let d = duration.isNaN ? defaultDuration : duration
 
-        UIView.animate(withDuration: d,
-                       delay: 0,
-                       options: .curveEaseOut,
-                       animations: { self.animation(oldView: oldView, newView: newView, expedited: false) },
-                       completion: { (finished: Bool) in
-                        if !self.aborted {
-                            self.postAnimation(oldView: oldView, newView: newView)
-                            completion()
-                        }
+        animator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: d, delay: 0, options: .curveEaseOut, animations: {
+            self.animation(oldView: oldView, newView: newView)
+        }, completion: { (_: UIViewAnimatingPosition) in
+            if self.animator != nil {
+                self.animator = nil
+                self.postAnimation(oldView: oldView, newView: newView)
+                completion()
+            }
         })
     }
 
     override func abortViewTransition(oldView: UIView?, newView: UIView) {
-        assert(!aborted)
-        aborted = true
-        self.animation(oldView: oldView, newView: newView, expedited: true)
-        self.postAnimation(oldView: oldView, newView: newView)
+        assert(animator != nil)
+        if let a = animator {
+            animator = nil
+            a.stopAnimation(false)
+            a.finishAnimation(at: .end)
+            self.postAnimation(oldView: oldView, newView: newView)
+        }
     }
 
     var defaultDuration: TimeInterval {
@@ -304,7 +306,7 @@ private class AnimationLogic: TransitionLogic {
     /**
      * This method has to set the view properties target values.
      */
-    func animation(oldView: UIView?, newView: UIView, expedited: Bool) {
+    func animation(oldView: UIView?, newView: UIView) {
     }
 
     func postAnimation(oldView: UIView?, newView: UIView) {
@@ -333,7 +335,7 @@ private class FadeAnimationLogic: AnimationLogic {
         }
     }
 
-    override func animation(oldView: UIView?, newView: UIView, expedited: Bool) {
+    override func animation(oldView: UIView?, newView: UIView) {
         let r = switchViewController.view.bounds
         newView.frame = r
 
@@ -421,7 +423,7 @@ private class ShiftAnimationLogic: AnimationLogic {
         parent.addSubview(newView)
     }
 
-    override func animation(oldView: UIView?, newView: UIView, expedited: Bool) {
+    override func animation(oldView: UIView?, newView: UIView) {
         let frame = switchViewController.view.bounds
 
         newView.frame = frame

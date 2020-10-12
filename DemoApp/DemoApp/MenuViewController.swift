@@ -32,15 +32,19 @@ class MenuViewController: UITableViewController {
 
         actions = [
             Action(title: "Push") {
+                [unowned self] in
                 self.push()
             },
-            Action(title: "Global Flip to Root Nav") {
+            Action(title: "Global Switch to Root Nav") {
+                [unowned self] in
                 self.globalFlipToRootNav()
             },
-            Action(title: "Global Flip to Lonely Menu") {
+            Action(title: "Global Switch to Lonely Menu") {
+                [unowned self] in
                 self.globalFlipToLonelyMenu()
             },
-            Action(title: "Global Flip to Root Nav Twice") {
+            Action(title: "Global Switch to Root Nav Twice (not supported when flipping") {
+                [unowned self] in
                 self.globalFlipToRootNavTwice()
             },
         ]

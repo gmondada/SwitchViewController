@@ -20,7 +20,7 @@ struct Transition {
 
 class MenuViewController: UITableViewController {
 
-    private let cellId = "Cell"
+    private let actionCellId = "ActionCell"
     private let transitionCellId = "TransitionCell"
     private let switchCellId = "SwitchCell"
     private var actions = [Action]()
@@ -51,7 +51,7 @@ class MenuViewController: UITableViewController {
                 [unowned self] in
                 self.globalFlipToLonelyMenu()
             },
-            Action(title: "Global Switch to Root Nav Twice (not supported when flipping") {
+            Action(title: "Global Switch to Root Nav Twice (test interruptible transitions)") {
                 [unowned self] in
                 self.globalFlipToRootNavTwice()
             },
@@ -61,15 +61,15 @@ class MenuViewController: UITableViewController {
             Transition(title: "None", animation: .none),
             Transition(title: "Fade", animation: .fade),
             Transition(title: "AntiFade", animation: .antiFade),
-            Transition(title: "Flip From Left", animation: .flipFromLeft),
-            Transition(title: "Flip From Right", animation: .flipFromRight),
+            Transition(title: "Flip From Left (non interruptible)", animation: .flipFromLeft),
+            Transition(title: "Flip From Right (non interruptible)", animation: .flipFromRight),
             Transition(title: "Shift Left", animation: .shiftLeft),
             Transition(title: "Shift Right", animation: .shiftRight),
             Transition(title: "Shift Up", animation: .shiftUp),
             Transition(title: "Shift Down", animation: .shiftDown),
         ]
 
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellId)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: actionCellId)
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: transitionCellId)
         tableView.register(SwitchCell.self, forCellReuseIdentifier: switchCellId)
     }
@@ -172,7 +172,7 @@ class MenuViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
         case 0:
-            let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath)
+            let cell = tableView.dequeueReusableCell(withIdentifier: actionCellId, for: indexPath)
             let action = actions[indexPath.row]
             cell.textLabel?.text = action.title
             cell.accessoryType = .disclosureIndicator

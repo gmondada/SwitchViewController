@@ -25,12 +25,6 @@ import UIKit
 
 class VerbexSwitchViewController: UIViewController {
 
-    var child: UIViewController?
-    let visibility = VerbexViewControllerVisibility()
-    private var currentTransitionLogic: TransitionLogic?
-
-    var transitionDuration: Double = .nan
-
     enum Animation {
         case none
         case fade     // the new view is faded in
@@ -42,6 +36,11 @@ class VerbexSwitchViewController: UIViewController {
         case shiftUp
         case shiftDown
     }
+
+    fileprivate(set) var child: UIViewController?
+    let visibility = VerbexViewControllerVisibility()
+    private var currentTransitionLogic: TransitionLogic?
+    var transitionDuration: Double = .nan
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()

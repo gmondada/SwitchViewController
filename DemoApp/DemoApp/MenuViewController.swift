@@ -2,7 +2,7 @@
 //  MenuViewController.swift
 //
 //  Created by Gabriele Mondada on 29.01.19.
-//  Copyright © 2019 Gabriele Mondada. All rights reserved.
+//  Copyright © 2019 Gabriele Mondada. MIT License.
 //
 
 import Foundation

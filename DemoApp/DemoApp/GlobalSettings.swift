@@ -1,9 +1,8 @@
 //
 //  GlobalSettings.swift
-//  DemoApp
 //
 //  Created by Gabriele Mondada on 12.10.20.
-//  Copyright © 2020 Gabriele Mondada. All rights reserved.
+//  Copyright © 2020 Gabriele Mondada. MIT License.
 //
 
 import Foundation

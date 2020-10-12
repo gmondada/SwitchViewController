@@ -2,7 +2,7 @@
 //  ViewController.swift
 //
 //  Created by Gabriele Mondada on 30.05.18.
-//  Copyright © 2018 Gabriele Mondada. All rights reserved.
+//  Copyright © 2018 Gabriele Mondada. MIT License.
 //
 
 import UIKit

@@ -12,4 +12,5 @@ var globalSettings = GlobalSettings()
 
 struct GlobalSettings {
     var isSlow = false
+    var animation: VerbexSwitchViewController.Animation = .flipFromRight
 }

@@ -13,11 +13,19 @@ struct Action {
     let routine: () -> Void
 }
 
+struct Transition {
+    let title: String
+    let animation: VerbexSwitchViewController.Animation
+}
+
 class MenuViewController: UITableViewController {
 
     private let cellId = "Cell"
+    private let transitionCellId = "TransitionCell"
     private let switchCellId = "SwitchCell"
     private var actions = [Action]()
+    private var transitions = [Transition]()
+    private let checkmark = UIImage(systemName: "checkmark")
 
     init() {
         super.init(style: .grouped)
@@ -49,7 +57,20 @@ class MenuViewController: UITableViewController {
             },
         ]
 
+        transitions = [
+            Transition(title: "None", animation: .none),
+            Transition(title: "Fade", animation: .fade),
+            Transition(title: "AntiFade", animation: .antiFade),
+            Transition(title: "Flip From Left", animation: .flipFromLeft),
+            Transition(title: "Flip From Right", animation: .flipFromRight),
+            Transition(title: "Shift Left", animation: .shiftLeft),
+            Transition(title: "Shift Right", animation: .shiftRight),
+            Transition(title: "Shift Up", animation: .shiftUp),
+            Transition(title: "Shift Down", animation: .shiftDown),
+        ]
+
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellId)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: transitionCellId)
         tableView.register(SwitchCell.self, forCellReuseIdentifier: switchCellId)
     }
 
@@ -98,14 +119,14 @@ class MenuViewController: UITableViewController {
         let duration: TimeInterval = globalSettings.isSlow ? 5.0 : .nan
         rootSwitchViewController?.transitionDuration = duration
         let vc = RootViewController()
-        rootSwitchViewController?.switchView(to: vc, animation: .flipFromLeft)
+        rootSwitchViewController?.switchView(to: vc, animation: globalSettings.animation)
     }
 
     func globalFlipToRootNav() {
         let duration: TimeInterval = globalSettings.isSlow ? 5.0 : .nan
         rootSwitchViewController?.transitionDuration = duration
         let vc = RootNavViewController()
-        rootSwitchViewController?.switchView(to: vc, animation: .flipFromLeft)
+        rootSwitchViewController?.switchView(to: vc, animation: globalSettings.animation)
     }
 
     func globalFlipToLonelyMenu() {
@@ -114,13 +135,11 @@ class MenuViewController: UITableViewController {
         let title = "Root Lonely Menu"
         let vc = MenuViewController()
         vc.title = title
-        rootSwitchViewController?.switchView(to: vc, animation: .flipFromLeft)
+        rootSwitchViewController?.switchView(to: vc, animation: globalSettings.animation)
     }
 
     func globalFlipToRootNavTwice() {
-        let duration: TimeInterval = globalSettings.isSlow ? 8.0 : .nan
-        let delay: TimeInterval = globalSettings.isSlow ? 3.0 : 0.1
-        rootSwitchViewController?.transitionDuration = duration
+        let delay: TimeInterval = globalSettings.isSlow ? 2.0 : 0.1
         globalFlipToRootNav()
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
             self.globalFlipToRootNav()
@@ -134,7 +153,7 @@ class MenuViewController: UITableViewController {
     // MARK: - UITableViewDataSource
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -142,6 +161,8 @@ class MenuViewController: UITableViewController {
         case 0:
             return actions.count
         case 1:
+            return transitions.count
+        case 2:
             return 1
         default:
             fatalError()
@@ -157,6 +178,13 @@ class MenuViewController: UITableViewController {
             cell.accessoryType = .disclosureIndicator
             return cell
         case 1:
+            let cell = tableView.dequeueReusableCell(withIdentifier: transitionCellId, for: indexPath)
+            let transition = transitions[indexPath.row]
+            cell.textLabel?.text = transition.title
+            cell.imageView?.image = checkmark
+            cell.imageView?.isHidden = transition.animation != globalSettings.animation
+            return cell
+        case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: switchCellId, for: indexPath) as! SwitchCell
             cell.textLabel?.text = "Slow"
             cell.selectionStyle = .none
@@ -172,8 +200,21 @@ class MenuViewController: UITableViewController {
     // MARK: - UITableViewDelegate
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let action = actions[indexPath.row]
-        action.routine()
+        switch indexPath.section {
+        case 0:
+            let action = actions[indexPath.row]
+            action.routine()
+        case 1:
+            tableView.deselectRow(at: indexPath, animated: true)
+            globalSettings.animation = transitions[indexPath.row].animation
+            for (index, transition) in transitions.enumerated() {
+                if let cell = tableView.cellForRow(at: IndexPath(row: index, section: 1)) {
+                    cell.imageView?.isHidden = transition.animation != globalSettings.animation
+                }
+            }
+        default:
+            break
+        }
     }
 }
 

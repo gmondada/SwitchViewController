@@ -8,6 +8,8 @@
 import Foundation
 import UIKit
 
+private var instanceCount = 0
+
 class RootNavViewController: UINavigationController {
 
     override func viewDidLoad() {
@@ -15,7 +17,8 @@ class RootNavViewController: UINavigationController {
         title = "Root Nav"
 
         let vc = MenuViewController()
-        vc.title = "Root Menu"
+        vc.title = "Root Menu - Instance \(instanceCount)"
+        instanceCount += 1
         viewControllers = [vc]
     }
 

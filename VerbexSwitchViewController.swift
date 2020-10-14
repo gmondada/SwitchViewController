@@ -50,6 +50,7 @@ class VerbexSwitchViewController: UIViewController {
     var asksChildrenForStatusBarStyle = false
     var asksChildrenForHomeIndicatorAutoHidden = false
     var asksChildrenForScreenEdgesDeferringSystemGestures = false
+    var animatesStatusBarAppearanceUpdates = false
 
     override var childForStatusBarHidden: UIViewController? {
         return asksChildrenForStatusBarHidden ? child : nil
@@ -111,59 +112,50 @@ class VerbexSwitchViewController: UIViewController {
         case .none:
             animationLogic = UnanimatedTransitionLogic(switchViewController: self,
                                                        newViewController: viewController,
-                                                       duration: transitionDuration,
                                                        completion: completion)
         case .fade:
             animationLogic = FadeAnimationLogic(switchViewController: self,
                                                 newViewController: viewController,
-                                                duration: transitionDuration,
                                                 completion: completion)
         case .antiFade:
             let anim = FadeAnimationLogic(switchViewController: self,
                                           newViewController: viewController,
-                                          duration: transitionDuration,
                                           completion: completion)
             anim.antiFade = true
             animationLogic = anim
         case .flipFromLeft:
             let flip = FlipAnimationLogic(switchViewController: self,
                                           newViewController: viewController,
-                                          duration: transitionDuration,
                                           completion: completion)
             flip.fromRight = false
             animationLogic = flip
         case .flipFromRight:
             let flip = FlipAnimationLogic(switchViewController: self,
                                           newViewController: viewController,
-                                          duration: transitionDuration,
                                           completion: completion)
             flip.fromRight = true
             animationLogic = flip
         case .shiftLeft:
             let shift = ShiftAnimationLogic(switchViewController: self,
                                             newViewController: viewController,
-                                            duration: transitionDuration,
                                             completion: completion)
             shift.moveDirection = .left
             animationLogic = shift
         case .shiftRight:
             let shift = ShiftAnimationLogic(switchViewController: self,
                                             newViewController: viewController,
-                                            duration: transitionDuration,
                                             completion: completion)
             shift.moveDirection = .right
             animationLogic = shift
         case .shiftUp:
             let shift = ShiftAnimationLogic(switchViewController: self,
                                             newViewController: viewController,
-                                            duration: transitionDuration,
                                             completion: completion)
             shift.moveDirection = .up
             animationLogic = shift
         case .shiftDown:
             let shift = ShiftAnimationLogic(switchViewController: self,
                                             newViewController: viewController,
-                                            duration: transitionDuration,
                                             completion: completion)
             shift.moveDirection = .down
             animationLogic = shift
@@ -172,10 +164,18 @@ class VerbexSwitchViewController: UIViewController {
         currentTransitionLogic?.terminate()
         currentTransitionLogic = animationLogic
 
+        animationLogic.preferredDuration = transitionDuration
         animationLogic.start()
 
         if asksChildrenForStatusBarHidden || asksChildrenForStatusBarStyle {
-            setNeedsStatusBarAppearanceUpdate()
+            let duration = animationLogic.duration
+            if duration == 0.0 || !animatesStatusBarAppearanceUpdates {
+                self.setNeedsStatusBarAppearanceUpdate()
+            } else {
+                UIView.animate(withDuration: duration) {
+                    self.setNeedsStatusBarAppearanceUpdate()
+                }
+            }
         }
         if asksChildrenForHomeIndicatorAutoHidden {
             setNeedsUpdateOfHomeIndicatorAutoHidden()
@@ -187,18 +187,21 @@ class VerbexSwitchViewController: UIViewController {
 }
 
 private class TransitionLogic {
-    let switchViewController: VerbexSwitchViewController
-    var oldViewController: UIViewController?
-    let newViewController: UIViewController
-    let duration: TimeInterval
-    var isRunning = false
 
     private var completion: (()->Void)?
 
-    init(switchViewController: VerbexSwitchViewController, newViewController: UIViewController, duration: TimeInterval = .nan, completion: (()->Void)? = nil) {
+    let switchViewController: VerbexSwitchViewController
+    var oldViewController: UIViewController?
+    let newViewController: UIViewController
+    var isRunning = false
+
+    var defaultDuration: TimeInterval { 0.25 }
+    final var preferredDuration: TimeInterval = .nan // nan = default value
+    var duration: TimeInterval { preferredDuration.isNaN ? defaultDuration : preferredDuration }
+
+    init(switchViewController: VerbexSwitchViewController, newViewController: UIViewController, completion: (()->Void)? = nil) {
         self.switchViewController = switchViewController
         self.newViewController = newViewController
-        self.duration = duration
         self.completion = completion
     }
 
@@ -288,6 +291,10 @@ private class TransitionLogic {
 }
 
 private class UnanimatedTransitionLogic: TransitionLogic {
+
+    override var defaultDuration: TimeInterval { 0.0 }
+    override var duration: TimeInterval { 0.0 }
+
     override func handleViewTransition(oldView: UIView?, newView: UIView, completion: @escaping ()->Void) {
         let parent = switchViewController.view!
         let r = parent.bounds
@@ -307,13 +314,13 @@ private class AnimationLogic: TransitionLogic {
 
     private var animator: UIViewPropertyAnimator?
 
+    override var defaultDuration: TimeInterval { 0.25 }
+
     override func handleViewTransition(oldView: UIView?, newView: UIView, completion: @escaping ()->Void) {
 
         preAnimation(oldView: oldView, newView: newView)
 
-        let d = duration.isNaN ? defaultDuration : duration
-
-        animator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: d, delay: 0, options: .curveEaseOut, animations: {
+        animator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: duration, delay: 0, options: .curveEaseOut, animations: {
             self.animation(oldView: oldView, newView: newView)
         }, completion: { (_: UIViewAnimatingPosition) in
             if self.animator != nil {
@@ -332,10 +339,6 @@ private class AnimationLogic: TransitionLogic {
             a.finishAnimation(at: .end)
             self.postAnimation(oldView: oldView, newView: newView)
         }
-    }
-
-    var defaultDuration: TimeInterval {
-        return 0.25
     }
 
     func preAnimation(oldView: UIView?, newView: UIView) {
@@ -387,7 +390,7 @@ private class FadeAnimationLogic: AnimationLogic {
 
 private class FlipAnimationLogic: TransitionLogic {
 
-    private let defaultDuration: TimeInterval = 0.7
+    override var defaultDuration: TimeInterval { 0.7 }
     
     var fromRight = false
 
@@ -412,11 +415,9 @@ private class FlipAnimationLogic: TransitionLogic {
         newView.translatesAutoresizingMaskIntoConstraints = true
         newView.frame = r
 
-        let d = duration.isNaN ? defaultDuration : duration
-
         UIView.transition(from: oldView,
                           to: newView,
-                          duration: d,
+                          duration: duration,
                           options: [fromRight ? .transitionFlipFromRight : .transitionFlipFromLeft, .curveEaseInOut],
                           completion: { _ in completion() })
     }

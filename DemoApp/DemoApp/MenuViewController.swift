@@ -155,7 +155,7 @@ class MenuViewController: UITableViewController {
 
     private func applySettings() {
         let duration: TimeInterval = globalSettings.isSlow ? 5.0 : .nan
-        rootSwitchViewController?.transitionDuration = duration
+        rootSwitchViewController?.preferredTransitionDuration = duration
         rootSwitchViewController?.asksChildrenForStatusBarHidden
             = globalSettings.reflectChildStatusBarHidden
         rootSwitchViewController?.asksChildrenForStatusBarStyle

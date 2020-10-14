@@ -44,6 +44,31 @@ class VerbexSwitchViewController: UIViewController {
     private var currentTransitionLogic: TransitionLogic?
     var transitionDuration: Double = .nan
 
+    // MARK: - Child Properties Forwarding
+
+    var asksChildrenForStatusBarHidden = false
+    var asksChildrenForStatusBarStyle = false
+    var asksChildrenForHomeIndicatorAutoHidden = false
+    var asksChildrenForScreenEdgesDeferringSystemGestures = false
+
+    override var childForStatusBarHidden: UIViewController? {
+        return asksChildrenForStatusBarHidden ? child : nil
+    }
+
+    override var childForStatusBarStyle: UIViewController? {
+        return asksChildrenForStatusBarStyle ? child : nil
+    }
+
+    override var childForHomeIndicatorAutoHidden: UIViewController? {
+        return asksChildrenForHomeIndicatorAutoHidden ? child : nil
+    }
+
+    override var childForScreenEdgesDeferringSystemGestures: UIViewController? {
+        return asksChildrenForScreenEdgesDeferringSystemGestures ? child : nil
+    }
+
+    // MARK: - View Livecycle
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         child?.view.frame = self.view.bounds
@@ -72,6 +97,8 @@ class VerbexSwitchViewController: UIViewController {
         super.viewDidDisappear(animated)
         visibility.setState(.hidden, animated: animated)
     }
+
+    // MARK: - Main Methods
 
     func switchView(to viewController: UIViewController, animation: Animation = .none) {
 
@@ -146,6 +173,16 @@ class VerbexSwitchViewController: UIViewController {
         currentTransitionLogic = animationLogic
 
         animationLogic.start()
+
+        if asksChildrenForStatusBarHidden || asksChildrenForStatusBarStyle {
+            setNeedsStatusBarAppearanceUpdate()
+        }
+        if asksChildrenForHomeIndicatorAutoHidden {
+            setNeedsUpdateOfHomeIndicatorAutoHidden()
+        }
+        if asksChildrenForScreenEdgesDeferringSystemGestures {
+            setNeedsUpdateOfScreenEdgesDeferringSystemGestures()
+        }
     }
 }
 

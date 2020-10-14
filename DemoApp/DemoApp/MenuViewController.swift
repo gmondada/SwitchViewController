@@ -94,6 +94,38 @@ class MenuViewController: UITableViewController {
         super.viewDidDisappear(animated)
     }
 
+    override var prefersStatusBarHidden: Bool {
+        get { return globalSettings.prefersStatusBarHidden }
+        set {
+            globalSettings.prefersStatusBarHidden = newValue
+            self.setNeedsStatusBarAppearanceUpdate()
+        }
+    }
+
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        get { return globalSettings.preferredStatusBarStyle }
+        set {
+            globalSettings.preferredStatusBarStyle = newValue
+            self.setNeedsStatusBarAppearanceUpdate()
+        }
+    }
+
+    override var prefersHomeIndicatorAutoHidden: Bool {
+        get { return globalSettings.prefersHomeIndicatorAutoHidden }
+        set {
+            globalSettings.prefersHomeIndicatorAutoHidden = newValue
+            self.setNeedsUpdateOfHomeIndicatorAutoHidden()
+        }
+    }
+
+    override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge {
+        get { return globalSettings.preferredScreenEdgesDeferringSystemGestures }
+        set {
+            globalSettings.preferredScreenEdgesDeferringSystemGestures = newValue
+            self.setNeedsUpdateOfScreenEdgesDeferringSystemGestures()
+        }
+    }
+
     // Actions
 
     func push() {
@@ -115,23 +147,33 @@ class MenuViewController: UITableViewController {
         return parent as? VerbexSwitchViewController
     }
 
-    func globalFlipToRoot() {
+    private func applySettings() {
         let duration: TimeInterval = globalSettings.isSlow ? 5.0 : .nan
         rootSwitchViewController?.transitionDuration = duration
+        rootSwitchViewController?.asksChildrenForStatusBarHidden
+            = globalSettings.reflectChildStatusBarHidden
+        rootSwitchViewController?.asksChildrenForStatusBarStyle
+            = globalSettings.reflectChildStatusBarStyle
+        rootSwitchViewController?.asksChildrenForHomeIndicatorAutoHidden
+            = globalSettings.reflectChildHomeIndicatorAutoHidden
+        rootSwitchViewController?.asksChildrenForScreenEdgesDeferringSystemGestures
+            = globalSettings.reflectChildScreenEdgesDeferringSystemGestures
+    }
+
+    func globalFlipToRoot() {
+        applySettings()
         let vc = RootViewController()
         rootSwitchViewController?.switchView(to: vc, animation: globalSettings.animation)
     }
 
     func globalFlipToRootNav() {
-        let duration: TimeInterval = globalSettings.isSlow ? 5.0 : .nan
-        rootSwitchViewController?.transitionDuration = duration
+        applySettings()
         let vc = RootNavViewController()
         rootSwitchViewController?.switchView(to: vc, animation: globalSettings.animation)
     }
 
     func globalFlipToLonelyMenu() {
-        let duration: TimeInterval = globalSettings.isSlow ? 5.0 : .nan
-        rootSwitchViewController?.transitionDuration = duration
+        applySettings()
         let title = "Root Lonely Menu"
         let vc = MenuViewController()
         vc.title = title
@@ -150,10 +192,42 @@ class MenuViewController: UITableViewController {
         globalSettings.isSlow = sender.isOn
     }
 
+    @objc private func reflectChildStatusBarHiddenToggleAction(sender: UISwitch) {
+        globalSettings.reflectChildStatusBarHidden = sender.isOn
+    }
+
+    @objc private func reflectChildStatusBarStyleToggleAction(sender: UISwitch) {
+        globalSettings.reflectChildStatusBarStyle = sender.isOn
+    }
+
+    @objc private func reflectChildHomeIndicatorAutoHiddenToggleAction(sender: UISwitch) {
+        globalSettings.reflectChildHomeIndicatorAutoHidden = sender.isOn
+    }
+
+    @objc private func reflectChildScreenEdgesDeferringSystemGesturesToggleAction(sender: UISwitch) {
+        globalSettings.reflectChildScreenEdgesDeferringSystemGestures = sender.isOn
+    }
+
+    @objc private func statusBarHiddenToggleAction(sender: UISwitch) {
+        prefersStatusBarHidden = sender.isOn
+    }
+
+    @objc private func statusBarForLightContentToggleAction(sender: UISwitch) {
+        preferredStatusBarStyle = sender.isOn ? .lightContent : .darkContent
+    }
+
+    @objc private func homeIndicatorAutoHiddenToggleAction(sender: UISwitch) {
+        prefersHomeIndicatorAutoHidden = sender.isOn
+    }
+
+    @objc private func deferringSystemGesturesToggleAction(sender: UISwitch) {
+        preferredScreenEdgesDeferringSystemGestures = sender.isOn ? .all : []
+    }
+
     // MARK: - UITableViewDataSource
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -163,7 +237,9 @@ class MenuViewController: UITableViewController {
         case 1:
             return transitions.count
         case 2:
-            return 1
+            return 5
+        case 3:
+            return 4
         default:
             fatalError()
         }
@@ -186,11 +262,57 @@ class MenuViewController: UITableViewController {
             return cell
         case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: switchCellId, for: indexPath) as! SwitchCell
-            cell.textLabel?.text = "Slow"
             cell.selectionStyle = .none
-            cell.control.isOn = globalSettings.isSlow
             cell.control.removeTarget(self, action: nil, for: .valueChanged)
-            cell.control.addTarget(self, action: #selector(slowToggleAction), for: .valueChanged)
+            switch indexPath.row {
+            case 0:
+                cell.textLabel?.text = "Slow"
+                cell.control.isOn = globalSettings.isSlow
+                cell.control.addTarget(self, action: #selector(slowToggleAction), for: .valueChanged)
+            case 1:
+                cell.textLabel?.text = "Refrect Child Status Bar Hidden"
+                cell.control.isOn = globalSettings.reflectChildStatusBarHidden
+                cell.control.addTarget(self, action: #selector(reflectChildStatusBarHiddenToggleAction), for: .valueChanged)
+            case 2:
+                cell.textLabel?.text = "Refrect Child Status Bar Style"
+                cell.control.isOn = globalSettings.reflectChildStatusBarStyle
+                cell.control.addTarget(self, action: #selector(reflectChildStatusBarStyleToggleAction), for: .valueChanged)
+            case 3:
+                cell.textLabel?.text = "Refrect Child Home Indicator Auto Hidden"
+                cell.control.isOn = globalSettings.reflectChildHomeIndicatorAutoHidden
+                cell.control.addTarget(self, action: #selector(reflectChildHomeIndicatorAutoHiddenToggleAction), for: .valueChanged)
+            case 4:
+                cell.textLabel?.text = "Refrect Child Screen Edges Deferring System Gestures"
+                cell.control.isOn = globalSettings.reflectChildScreenEdgesDeferringSystemGestures
+                cell.control.addTarget(self, action: #selector(reflectChildScreenEdgesDeferringSystemGesturesToggleAction), for: .valueChanged)
+            default:
+                fatalError()
+            }
+            return cell
+        case 3:
+            let cell = tableView.dequeueReusableCell(withIdentifier: switchCellId, for: indexPath) as! SwitchCell
+            cell.selectionStyle = .none
+            cell.control.removeTarget(self, action: nil, for: .valueChanged)
+            switch indexPath.row {
+            case 0:
+                cell.textLabel?.text = "Status Bar Hidden"
+                cell.control.isOn = prefersStatusBarHidden
+                cell.control.addTarget(self, action: #selector(statusBarHiddenToggleAction), for: .valueChanged)
+            case 1:
+                cell.textLabel?.text = "Status Bar For Light Content"
+                cell.control.isOn = preferredStatusBarStyle == .lightContent
+                cell.control.addTarget(self, action: #selector(statusBarForLightContentToggleAction), for: .valueChanged)
+            case 2:
+                cell.textLabel?.text = "Home Indicator Auto Hidden"
+                cell.control.isOn = prefersHomeIndicatorAutoHidden
+                cell.control.addTarget(self, action: #selector(homeIndicatorAutoHiddenToggleAction), for: .valueChanged)
+            case 3:
+                cell.textLabel?.text = "Defer System Gestures"
+                cell.control.isOn = globalSettings.preferredScreenEdgesDeferringSystemGestures != []
+                cell.control.addTarget(self, action: #selector(deferringSystemGesturesToggleAction), for: .valueChanged)
+            default:
+                fatalError()
+            }
             return cell
         default:
             fatalError()

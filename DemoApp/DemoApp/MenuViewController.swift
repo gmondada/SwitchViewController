@@ -55,6 +55,10 @@ class MenuViewController: UITableViewController {
                 [unowned self] in
                 self.globalFlipToRootNavTwice()
             },
+            Action(title: "Toggle Settings + Global Switch to Lonely Menu") {
+                [unowned self] in
+                self.globalFlipToLonelyMenu(toggleSettings: true)
+            },
         ]
 
         transitions = [
@@ -176,8 +180,14 @@ class MenuViewController: UITableViewController {
         rootSwitchViewController?.switchView(to: vc, animation: globalSettings.animation)
     }
 
-    func globalFlipToLonelyMenu() {
+    func globalFlipToLonelyMenu(toggleSettings: Bool = false) {
         applySettings()
+        if toggleSettings {
+            globalSettings.prefersStatusBarHidden = !globalSettings.prefersStatusBarHidden
+            globalSettings.preferredStatusBarStyle = globalSettings.preferredStatusBarStyle == .lightContent ? .darkContent : .lightContent
+            globalSettings.prefersHomeIndicatorAutoHidden = !globalSettings.prefersHomeIndicatorAutoHidden
+            globalSettings.preferredScreenEdgesDeferringSystemGestures = globalSettings.preferredScreenEdgesDeferringSystemGestures == [] ? .all : []
+        }
         let title = "Root Lonely Menu"
         let vc = MenuViewController()
         vc.title = title

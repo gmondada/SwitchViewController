@@ -29,8 +29,8 @@ class VerbexSwitchViewController: UIViewController {
 
     enum Animation {
         case none
-        case fade     // the new view is faded in
-        case antiFade // the old view is faded out
+        case fade          // the new view is faded in
+        case antiFade      // the old view is faded out
         case flipFromLeft
         case flipFromRight
         case shiftLeft
@@ -42,7 +42,8 @@ class VerbexSwitchViewController: UIViewController {
     fileprivate(set) var child: UIViewController?
     let visibility = VerbexViewControllerVisibility()
     private var currentTransitionLogic: TransitionLogic?
-    var transitionDuration: Double = .nan
+
+    var preferredTransitionDuration: TimeInterval = .nan // nan means default value
 
     // MARK: - Child Properties Forwarding
 
@@ -164,7 +165,7 @@ class VerbexSwitchViewController: UIViewController {
         currentTransitionLogic?.terminate()
         currentTransitionLogic = animationLogic
 
-        animationLogic.preferredDuration = transitionDuration
+        animationLogic.preferredDuration = preferredTransitionDuration
         animationLogic.start()
 
         if asksChildrenForStatusBarHidden || asksChildrenForStatusBarStyle {

@@ -18,6 +18,7 @@ struct GlobalSettings {
     var reflectChildStatusBarStyle = false
     var reflectChildHomeIndicatorAutoHidden = false
     var reflectChildScreenEdgesDeferringSystemGestures = false
+    var animateStatusBarAppearanceUpdates = false
 
     // for menu view controller
     var prefersStatusBarHidden = false

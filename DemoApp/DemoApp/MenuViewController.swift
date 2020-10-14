@@ -106,7 +106,9 @@ class MenuViewController: UITableViewController {
         get { return globalSettings.preferredStatusBarStyle }
         set {
             globalSettings.preferredStatusBarStyle = newValue
-            self.setNeedsStatusBarAppearanceUpdate()
+            UIView.animate(withDuration: 0.2) {
+                self.setNeedsStatusBarAppearanceUpdate()
+            }
         }
     }
 
@@ -158,6 +160,8 @@ class MenuViewController: UITableViewController {
             = globalSettings.reflectChildHomeIndicatorAutoHidden
         rootSwitchViewController?.asksChildrenForScreenEdgesDeferringSystemGestures
             = globalSettings.reflectChildScreenEdgesDeferringSystemGestures
+        rootSwitchViewController?.animatesStatusBarAppearanceUpdates
+            = globalSettings.animateStatusBarAppearanceUpdates
     }
 
     func globalFlipToRoot() {
@@ -208,6 +212,10 @@ class MenuViewController: UITableViewController {
         globalSettings.reflectChildScreenEdgesDeferringSystemGestures = sender.isOn
     }
 
+    @objc private func animateStatusBarAppearanceUpdatesToggleAction(sender: UISwitch) {
+        globalSettings.animateStatusBarAppearanceUpdates = sender.isOn
+    }
+
     @objc private func statusBarHiddenToggleAction(sender: UISwitch) {
         prefersStatusBarHidden = sender.isOn
     }
@@ -237,7 +245,7 @@ class MenuViewController: UITableViewController {
         case 1:
             return transitions.count
         case 2:
-            return 5
+            return 6
         case 3:
             return 4
         default:
@@ -285,6 +293,10 @@ class MenuViewController: UITableViewController {
                 cell.textLabel?.text = "Refrect Child Screen Edges Deferring System Gestures"
                 cell.control.isOn = globalSettings.reflectChildScreenEdgesDeferringSystemGestures
                 cell.control.addTarget(self, action: #selector(reflectChildScreenEdgesDeferringSystemGesturesToggleAction), for: .valueChanged)
+            case 5:
+                cell.textLabel?.text = "Animate Status Bar Appearance Updates"
+                cell.control.isOn = globalSettings.animateStatusBarAppearanceUpdates
+                cell.control.addTarget(self, action: #selector(animateStatusBarAppearanceUpdatesToggleAction), for: .valueChanged)
             default:
                 fatalError()
             }

@@ -288,19 +288,19 @@ class MenuViewController: UITableViewController {
                 cell.control.isOn = globalSettings.isSlow
                 cell.control.addTarget(self, action: #selector(slowToggleAction), for: .valueChanged)
             case 1:
-                cell.textLabel?.text = "Refrect Child Status Bar Hidden"
+                cell.textLabel?.text = "Reflect Child Status Bar Hidden"
                 cell.control.isOn = globalSettings.reflectChildStatusBarHidden
                 cell.control.addTarget(self, action: #selector(reflectChildStatusBarHiddenToggleAction), for: .valueChanged)
             case 2:
-                cell.textLabel?.text = "Refrect Child Status Bar Style"
+                cell.textLabel?.text = "Reflect Child Status Bar Style"
                 cell.control.isOn = globalSettings.reflectChildStatusBarStyle
                 cell.control.addTarget(self, action: #selector(reflectChildStatusBarStyleToggleAction), for: .valueChanged)
             case 3:
-                cell.textLabel?.text = "Refrect Child Home Indicator Auto Hidden"
+                cell.textLabel?.text = "Reflect Child Home Indicator Auto Hidden"
                 cell.control.isOn = globalSettings.reflectChildHomeIndicatorAutoHidden
                 cell.control.addTarget(self, action: #selector(reflectChildHomeIndicatorAutoHiddenToggleAction), for: .valueChanged)
             case 4:
-                cell.textLabel?.text = "Refrect Child Screen Edges Deferring System Gestures"
+                cell.textLabel?.text = "Reflect Child Screen Edges Deferring System Gestures"
                 cell.control.isOn = globalSettings.reflectChildScreenEdgesDeferringSystemGestures
                 cell.control.addTarget(self, action: #selector(reflectChildScreenEdgesDeferringSystemGesturesToggleAction), for: .valueChanged)
             case 5:

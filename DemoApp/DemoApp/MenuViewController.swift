@@ -177,7 +177,9 @@ class MenuViewController: UITableViewController {
     func globalFlipToRootNav() {
         applySettings()
         let vc = RootNavViewController()
-        rootSwitchViewController?.switchView(to: vc, animation: globalSettings.animation)
+        rootSwitchViewController?.switchView(to: vc, animation: globalSettings.animation) {
+            print("transition ended")
+        }
     }
 
     func globalFlipToLonelyMenu(toggleSettings: Bool = false) {

@@ -102,10 +102,11 @@ class VerbexSwitchViewController: UIViewController {
 
     // MARK: - Main Methods
 
-    func switchView(to viewController: UIViewController, animation: Animation = .none) {
+    func switchView(to viewController: UIViewController, animation: Animation = .none, completion: (() -> Void)? = nil) {
 
-        let completion = {
+        let animationCompletion = {
             self.currentTransitionLogic = nil
+            completion?()
         }
 
         let animationLogic: TransitionLogic
@@ -113,51 +114,51 @@ class VerbexSwitchViewController: UIViewController {
         case .none:
             animationLogic = UnanimatedTransitionLogic(switchViewController: self,
                                                        newViewController: viewController,
-                                                       completion: completion)
+                                                       completion: animationCompletion)
         case .fade:
             animationLogic = FadeAnimationLogic(switchViewController: self,
                                                 newViewController: viewController,
-                                                completion: completion)
+                                                completion: animationCompletion)
         case .antiFade:
             let anim = FadeAnimationLogic(switchViewController: self,
                                           newViewController: viewController,
-                                          completion: completion)
+                                          completion: animationCompletion)
             anim.antiFade = true
             animationLogic = anim
         case .flipFromLeft:
             let flip = FlipAnimationLogic(switchViewController: self,
                                           newViewController: viewController,
-                                          completion: completion)
+                                          completion: animationCompletion)
             flip.fromRight = false
             animationLogic = flip
         case .flipFromRight:
             let flip = FlipAnimationLogic(switchViewController: self,
                                           newViewController: viewController,
-                                          completion: completion)
+                                          completion: animationCompletion)
             flip.fromRight = true
             animationLogic = flip
         case .shiftLeft:
             let shift = ShiftAnimationLogic(switchViewController: self,
                                             newViewController: viewController,
-                                            completion: completion)
+                                            completion: animationCompletion)
             shift.moveDirection = .left
             animationLogic = shift
         case .shiftRight:
             let shift = ShiftAnimationLogic(switchViewController: self,
                                             newViewController: viewController,
-                                            completion: completion)
+                                            completion: animationCompletion)
             shift.moveDirection = .right
             animationLogic = shift
         case .shiftUp:
             let shift = ShiftAnimationLogic(switchViewController: self,
                                             newViewController: viewController,
-                                            completion: completion)
+                                            completion: animationCompletion)
             shift.moveDirection = .up
             animationLogic = shift
         case .shiftDown:
             let shift = ShiftAnimationLogic(switchViewController: self,
                                             newViewController: viewController,
-                                            completion: completion)
+                                            completion: animationCompletion)
             shift.moveDirection = .down
             animationLogic = shift
         }

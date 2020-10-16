@@ -11,6 +11,7 @@
 		7E22F44920BEB3DC009D75D2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E22F44820BEB3DC009D75D2 /* ViewController.swift */; };
 		7E22F44E20BEB3DC009D75D2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7E22F44D20BEB3DC009D75D2 /* Assets.xcassets */; };
 		7E22F45120BEB3DC009D75D2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7E22F44F20BEB3DC009D75D2 /* LaunchScreen.storyboard */; };
+		7EB0A2C625398466008A0843 /* VisibilityTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EB0A2C525398466008A0843 /* VisibilityTracker.swift */; };
 		E06BFF0A2200F5C00042FC24 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E06BFF092200F5C00042FC24 /* RootViewController.swift */; };
 		E06BFF0C2200F6FD0042FC24 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E06BFF0B2200F6FD0042FC24 /* MenuViewController.swift */; };
 		E06DBC592534C67B00427E8A /* GlobalSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E06DBC582534C67B00427E8A /* GlobalSettings.swift */; };
@@ -25,6 +26,7 @@
 		7E22F44D20BEB3DC009D75D2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7E22F45020BEB3DC009D75D2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7E22F45220BEB3DC009D75D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7EB0A2C525398466008A0843 /* VisibilityTracker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VisibilityTracker.swift; path = ../VisibilityTracker.swift; sourceTree = "<group>"; };
 		E06BFF092200F5C00042FC24 /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		E06BFF0B2200F6FD0042FC24 /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		E06DBC582534C67B00427E8A /* GlobalSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSettings.swift; sourceTree = "<group>"; };
@@ -80,6 +82,7 @@
 			children = (
 				E0A703AD2533753F00680003 /* VerbexSwitchViewController.swift */,
 				E0A703AE2533753F00680003 /* VerbexViewControllerVisibility.swift */,
+				7EB0A2C525398466008A0843 /* VisibilityTracker.swift */,
 			);
 			name = VerbexSwitchViewController;
 			sourceTree = "<group>";
@@ -160,6 +163,7 @@
 				E06DBC592534C67B00427E8A /* GlobalSettings.swift in Sources */,
 				E06BFF0A2200F5C00042FC24 /* RootViewController.swift in Sources */,
 				E06BFF0C2200F6FD0042FC24 /* MenuViewController.swift in Sources */,
+				7EB0A2C625398466008A0843 /* VisibilityTracker.swift in Sources */,
 				E0A703AF2533753F00680003 /* VerbexSwitchViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

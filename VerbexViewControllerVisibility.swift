@@ -32,7 +32,7 @@ public enum VerbexViewControllerVisibilityState {
     case disappearing
 }
 
-protocol VerbexViewControllerVisibilityStateHolder: class {
+protocol VerbexViewControllerVisibilityStateHolder: AnyObject {
     var state: VerbexViewControllerVisibilityState { get set }
     func setState(_: VerbexViewControllerVisibilityState, animated: Bool)
 }
